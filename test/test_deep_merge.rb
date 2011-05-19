@@ -3,6 +3,14 @@ require 'test/unit'
 $:.unshift(File.dirname(__FILE__) + '/../lib/')
 require 'deep_merge'
 
+# Assume strings have a blank? method
+# as they do when ActiveSupport is included.
+class String
+  def blank?
+    size == 0
+  end
+end
+
 class TestDeepMerge < Test::Unit::TestCase
 
   def setup
@@ -551,5 +559,12 @@ class TestDeepMerge < Test::Unit::TestCase
     hash_dst = {"item" => [{"3" => "5"}]}
     DeepMerge::deep_merge!(hash_src, hash_dst)
     assert_equal({"item" => [{"3" => "5"}, {"1" => "3"}, {"2" => "4"}]}, hash_dst)
+
+
+    # Merging empty strings
+    hash_dst = {"item" => "hello" }
+    hash_src = {"item" => "" }
+    DeepMerge::deep_merge!(hash_src, hash_dst)
+    assert_equal({"item" => ""}, hash_dst)
   end # test_deep_merge
 end
