@@ -5,7 +5,7 @@ require 'deep_merge'
 
 # Assume strings have a blank? method
 # as they do when ActiveSupport is included.
-class String
+module StringBlank
   def blank?
     size == 0
   end
@@ -562,8 +562,10 @@ class TestDeepMerge < Test::Unit::TestCase
 
 
     # Merging empty strings
-    hash_dst = {"item" => "hello" }
-    hash_src = {"item" => "" }
+    s1, s2 = "hello", ""
+    [s1, s2].each { |s| s.instance_eval { extend StringBlank } }
+    hash_dst = {"item" => s1 }
+    hash_src = {"item" => s2 }
     DeepMerge::deep_merge!(hash_src, hash_dst)
     assert_equal({"item" => ""}, hash_dst)
   end # test_deep_merge
